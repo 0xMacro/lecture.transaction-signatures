@@ -173,6 +173,10 @@ contract Comp {
 
         // add signed_data payload https://eips.ethereum.org/EIPS/eip-191
         bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
+
+        // NOTE: structHash is prepended with the Ethereum Signed Message standard
+        // this implementation does not have it
+        // https://eips.ethereum.org/EIPS/eip-712#specification
         
         // recover who signed this based on our digest
         // v, r, s are signature params
@@ -181,8 +185,6 @@ contract Comp {
         require(signatory != address(0), "Comp::delegateBySig: invalid signature");
         require(nonce == nonces[signatory]++, "Comp::delegateBySig: invalid nonce");
         require(block.timestamp <= expiry, "Comp::delegateBySig: signature expired");
-
-        // https://eips.ethereum.org/EIPS/eip-712#eth_signtypeddata
 
         return _delegate(signatory, delegatee);
     }
