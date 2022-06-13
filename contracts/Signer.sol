@@ -13,27 +13,18 @@ contract Signer {
 
 
 
-
-
-    // helper for verify() - uses OZ library above
     function recoverSigner(bytes32 data, bytes memory signature) public pure returns (address) {
         return data.recover(signature);
     }
 
 
 
-
-
-    // helper for verify()
     function getMessageHash(address _to, uint256 _amount, string memory _message, uint256 nonce) public pure returns (bytes32) {
         return keccak256(abi.encodePacked(_to, _amount, _message, nonce));
     }
 
 
 
-
-
-    // helper for verify()
     function getEthSignedMessageHash(bytes32 _messageHash) public pure returns (bytes32) {
         return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _messageHash));
     }
@@ -53,10 +44,6 @@ contract Signer {
 
         return actualSigner == _signer;
     }
-
-
-
-
 
 
     function sendEthWithValidSig(address signer, address to, uint256 amount, string memory message, uint256 nonce, bytes memory signature) public {

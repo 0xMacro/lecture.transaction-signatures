@@ -159,16 +159,23 @@ contract Comp {
      * @param s Half of the ECDSA signature pair
      */
     function delegateBySig(address delegatee, uint nonce, uint expiry, uint8 v, bytes32 r, bytes32 s) public {
+
+        // 1) construct domain separator
+        // 2) construct hashstruct
+        // 3) pre-pend with https://eips.ethereum.org/EIPS/eip-191
+        // 4) pack OR recover signature
+
         // https://eips.ethereum.org/EIPS/eip-712#definition-of-domainseparator
         bytes32 domainSeparator = keccak256(abi.encode(DOMAIN_TYPEHASH, keccak256(bytes(name)), getChainId(), address(this)));
 
         // https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct
-        // function level
         bytes32 structHash = keccak256(abi.encode(DELEGATION_TYPEHASH, delegatee, nonce, expiry));
 
-        // total signed payload
+        // add signed_data payload https://eips.ethereum.org/EIPS/eip-191
         bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
         
+        // recover who signed this based on our digest
+        // v, r, s are signature params
         address signatory = ecrecover(digest, v, r, s);
 
         require(signatory != address(0), "Comp::delegateBySig: invalid signature");
